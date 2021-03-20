@@ -350,6 +350,15 @@ export default {
       APY: "", 
     };
   },
+  async created() {
+    try {
+      await timeout(500);
+      this.getAPY();
+
+    } catch {
+      this.APY = BN(100).toString();
+    }
+  },
   async mounted() {
     try {
       await timeout(500);
@@ -357,7 +366,6 @@ export default {
         "https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=0x898bad2774eb97cf6b94605677f43b41871410b1&apikey=GKKIY3WXXG1EICPRKACRR75MA4UE7ANFY8"
       );
       this.TVL = BN(response.data.result).div(1e18).toFixed(0).toString();
-      this.getAPY();
 
     } catch {
       this.TVL = BN(12050).toString();
@@ -385,7 +393,7 @@ export default {
         );
         const locked = BN(remRewards);
         const APY = Math.round(BN(100 * tokenPerSgt * ((locked * 1e18) / totalStaked) * (360 / stakedSchedule))).toString() + "%";
-        this.APY = APY;
+        await Promise.resolve(APY).then(APY => {this.APY = APY});
       } catch (err) {
         // await Promise.resolve(BN(100).toString()).then(APY => {this.APY = APY});
         if (err.response) {
@@ -395,9 +403,7 @@ export default {
           // client never received a response, or request never left
           console.log("Network Error:", err)
         } else {
-          this.getAPY();
           console.log("Client Error:", err)
-          console.log("this happened")
         }
       }
     }

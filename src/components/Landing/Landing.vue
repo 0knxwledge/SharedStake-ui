@@ -366,6 +366,7 @@ export default {
   methods: {
     async getAPY() {
       try {
+        await timeout(500);
         const token = SGT_uniswap;
         const tokenGeyser = geyser_SGT_uniswap;
         const reserves = await token.methods.getReserves().call();
@@ -386,7 +387,7 @@ export default {
         const APY = Math.round(BN(100 * tokenPerSgt * ((locked * 1e18) / totalStaked) * (360 / stakedSchedule))).toString() + "%";
         this.APY = APY;
       } catch (err) {
-        await Promise.resolve(BN(100).toString()).then(APY => {this.APY = APY});
+        // await Promise.resolve(BN(100).toString()).then(APY => {this.APY = APY});
         if (err.response) {
           // client received an error response (5xx, 4xx)
           console.log("Server Error:", err)
@@ -395,6 +396,7 @@ export default {
           console.log("Network Error:", err)
         } else {
           console.log("Client Error:", err)
+          console.log("this happened")
         }
       }
     }
